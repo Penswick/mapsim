@@ -1,4 +1,4 @@
-import PerlinNoise from './PerlinNoise.js';
+import { generateLayerOne } from './layers/LayerOne.js';
 
 export const canvas = document.getElementById('myCanvas');
 const ctx = canvas.getContext('2d');
@@ -8,13 +8,18 @@ function generateNoise() {
   let landPixels;
   let totalPixels;
   let landPercentage;
-  const minLandPercentage = 30; // Minimum percentage of land
-  const maxLandPercentage = 70; // Maximum percentage of land
+  const seed1 = Math.floor(Math.random() * 100000); // generates the first seed
+  const seed2 = Math.floor(Math.random() * 100000); // generates the second seed
+  const layerData = generateLayerOne(canvas.width, canvas.height, seed1, seed2);
+  const minLandPercentage = 50; // Minimum percentage of land
+  const maxLandPercentage = 60; // Maximum percentage of land
+  const maxAttempts = 10; // Maximum number of attempts to generate a map
+  let attempts = 0;
   let imageData;
+  
 
   do {
-    const seed = Math.floor(Math.random() * 100000); // generates the seed
-    const noiseGenerator = new PerlinNoise(seed);
+
     imageData = ctx.createImageData(canvas.width, canvas.height);
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
@@ -27,8 +32,7 @@ function generateNoise() {
 
     for (let y = 0; y < canvas.height; y++) {
       for (let x = 0; x < canvas.width; x++) {
-        const scalingFactor = 0.001; // change frequency
-        const noiseValue = noiseGenerator.noise(x * scalingFactor, y * scalingFactor, 0);
+        const combinedNoiseValue = layerData[y * canvas.width + x];
         const dx = x - centerX;
         const dy = y - centerY;
         const distanceX = Math.abs(dx) / maxDistanceX;
@@ -37,7 +41,7 @@ function generateNoise() {
 
         // Blend the noise value with the radial gradient
         const gradient = Math.max(0, 1 - Math.min(Math.pow(distance / (1 - bufferZone), 4), 1));
-        const blendedNoiseValue = noiseValue * gradient;
+        const blendedNoiseValue = combinedNoiseValue * gradient;
 
         const idx = (y * canvas.width + x) * 4;
         const colorThreshold = 0.02; // change the water/land ratio
@@ -60,7 +64,8 @@ function generateNoise() {
     }
 
     landPercentage = (landPixels / totalPixels) * 100;
-  } while (landPercentage < minLandPercentage || landPercentage > maxLandPercentage);
+    attempts++; // increments the attempts at generating the map.
+  } while ((landPercentage < minLandPercentage || landPercentage > maxLandPercentage) && attempts < maxAttempts);
 
   ctx.putImageData(imageData, 0, 0);
 }
