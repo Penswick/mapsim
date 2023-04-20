@@ -1,4 +1,4 @@
-# mapsim
+# Fantasy Map Generator
 
 The end goal of this project is to build a fantasy map generator using Vanilla Javascript and HTML Canvas. Utilising the Perlin Noise algorithm.
 
