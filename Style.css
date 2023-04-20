@@ -1,0 +1,28 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  .options__wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    background-color: #f0f0f0;
+    bottom: 0px;
+  }
+  
+  .genBtn {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    border-radius: 4px;
+  }
+  
+  .genBtn:hover {
+    background-color: #45a049;
+  }
+  
