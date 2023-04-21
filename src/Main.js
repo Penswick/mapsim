@@ -3,6 +3,7 @@ import { generateLayerOne } from './layers/LayerOne.js';
 export const canvas = document.getElementById('myCanvas');
 const ctx = canvas.getContext('2d');
 const generateBtn = document.querySelector('.genBtn');
+const saveBtn = document.querySelector('.saveBtn'); // Add this line
 
 function generateNoise() {
   let landPixels;
@@ -10,14 +11,16 @@ function generateNoise() {
   let landPercentage;
   const minLandPercentage = 30; // Minimum percentage of land
   const maxLandPercentage = 50; // Maximum percentage of land
-  const maxAttempts = 100; // Maximum number of attempts to generate a map
+  const maxAttempts = 1; // Maximum number of attempts to generate a map
   let attempts = 0;
   const shallowWaterThreshold = 0.05; // change the deep/shallow water ratio
   let imageData;
+  let seed1; // Declare seed1 here
+  let seed2; // Declare seed2 here
   
   do {
-    const seed1 = Math.floor(Math.random() * 100000); // generates the first seed
-    const seed2 = Math.floor(Math.random() * 100000); // generates the second seed
+    seed1 = Math.floor(Math.random() * 100000); // generates the first seed
+    seed2 = Math.floor(Math.random() * 100000); // generates the second seed
     imageData = ctx.createImageData(canvas.width, canvas.height);
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
@@ -77,14 +80,35 @@ function generateNoise() {
 
     landPercentage = (landPixels / totalPixels) * 100;
     console.log(`Attempt ${attempts}: ${landPercentage}% land`);
+    console.log(`${seed1} ${seed2}`); // Updated console.log statement
+
+    // GIVE THE ATTEMPTS COUNTER SOME BLOODY SPACE SO I STOP TOUCHING IT AND CRASHING MY BROWSER
     attempts++; // increments the attempts at generating the map.
+    // GIVE THE ATTEMPTS COUNTER SOME BLOODY SPACE SO I STOP TOUCHING IT AND CRASHING MY BROWSER
+
   } while ((landPercentage < minLandPercentage || landPercentage > maxLandPercentage) && attempts < maxAttempts);
 
   ctx.putImageData(imageData, 0, 0);
+  return { seed1, seed2 };
 }
 
+generateBtn.addEventListener('click', () => {
+  const seeds = generateNoise();
+  saveBtn.dataset.seed1 = seeds.seed1;
+  saveBtn.dataset.seed2 = seeds.seed2;
+});
+
+saveBtn.addEventListener('click', () => {
+  const seed1 = saveBtn.dataset.seed1;
+  const seed2 = saveBtn.dataset.seed2;
+  const filename = `Map_${seed1}_${seed2}.png`;
+
+  canvas.toBlob((blob) => {
+    window.saveAs(blob, filename); // Use window.saveAs instead
+  }, 'image/png');
+});
 
 
-generateBtn.addEventListener('click', generateNoise);
-
-generateNoise(); // Generates first time for testing purposes.
+const initialSeeds = generateNoise();
+saveBtn.dataset.seed1 = initialSeeds.seed1;
+saveBtn.dataset.seed2 = initialSeeds.seed2;
