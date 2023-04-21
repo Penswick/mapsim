@@ -6,7 +6,6 @@ The development will be split into 2 main chunks. One focused on the primary fea
 
 **Primary features:**
    - Terrain Generation
-   - Elevation
    - Sea level
    - Biomes
 
