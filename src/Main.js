@@ -9,7 +9,7 @@ function generateNoise() {
   let totalPixels;
   let landPercentage;
   const minLandPercentage = 30; // Minimum percentage of land
-  const maxLandPercentage = 60; // Maximum percentage of land
+  const maxLandPercentage = 50; // Maximum percentage of land
   const maxAttempts = 100; // Maximum number of attempts to generate a map
   let attempts = 0;
   const shallowWaterThreshold = 0.05; // change the deep/shallow water ratio
@@ -45,6 +45,7 @@ function generateNoise() {
 
         const idx = (y * canvas.width + x) * 4;
         const colorThreshold = 0.015; // change the water/land ratio
+        const coastlineThreshold = 0.06; // control the width of the coastline
 
         if (blendedNoiseValue < colorThreshold) {
           // Deep water
@@ -56,6 +57,10 @@ function generateNoise() {
           imageData.data[idx] = 0;
           imageData.data[idx + 1] = 100;
           imageData.data[idx + 2] = 255;
+        } else if (blendedNoiseValue < coastlineThreshold) {
+          imageData.data[idx] = 240; // Adjust these values to set the coastline color (R, G, B)
+          imageData.data[idx + 1] = 230;
+          imageData.data[idx + 2] = 50;
         } else {
           // Land
           imageData.data[idx] = 0;
