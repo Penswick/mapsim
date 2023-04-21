@@ -1,4 +1,5 @@
 import { generateLayerOne } from './layers/LayerOne.js';
+import { generateLayerTwo } from './layers/LayerTwo.js';
 
 export const canvas = document.getElementById('myCanvas');
 const ctx = canvas.getContext('2d');
@@ -17,10 +18,12 @@ function generateNoise() {
   let imageData;
   let seed1; // Declare seed1 here
   let seed2; // Declare seed2 here
+  let seed3; // Declare seed3 here
   
   do {
     seed1 = Math.floor(Math.random() * 100000); // generates the first seed
     seed2 = Math.floor(Math.random() * 100000); // generates the second seed
+    seed3 = Math.floor(Math.random() * 100000); // generates the third seed
     imageData = ctx.createImageData(canvas.width, canvas.height);
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
@@ -32,6 +35,8 @@ function generateNoise() {
     totalPixels = 0;
 
     const layerData = generateLayerOne(canvas.width, canvas.height, seed1, seed2);
+    const mountainData = generateLayerTwo(canvas.width, canvas.height, seed3);
+
 
     for (let y = 0; y < canvas.height; y++) {
       for (let x = 0; x < canvas.width; x++) {
@@ -49,6 +54,7 @@ function generateNoise() {
         const idx = (y * canvas.width + x) * 4;
         const colorThreshold = 0.015; // change the water/land ratio
         const coastlineThreshold = 0.06; // control the width of the coastline
+        const mountainThreshold = 0.6; // Adjust this value to control the mountain ratio
 
         if (blendedNoiseValue < colorThreshold) {
           // Deep water
@@ -64,6 +70,11 @@ function generateNoise() {
           imageData.data[idx] = 240; // Adjust these values to set the coastline color (R, G, B)
           imageData.data[idx + 1] = 230;
           imageData.data[idx + 2] = 50;
+        } else if (mountainData[y * canvas.width + x] > mountainThreshold) {
+          // Mountain
+          imageData.data[idx] = 255;
+          imageData.data[idx + 1] = 125;
+          imageData.data[idx + 2] = 125;
         } else {
           // Land
           imageData.data[idx] = 0;
@@ -80,7 +91,7 @@ function generateNoise() {
 
     landPercentage = (landPixels / totalPixels) * 100;
     console.log(`Attempt ${attempts}: ${landPercentage}% land`);
-    console.log(`${seed1} ${seed2}`); // Updated console.log statement
+    console.log(`${seed1} ${seed2} ${seed3}`); // Updated console.log statement
 
     // GIVE THE ATTEMPTS COUNTER SOME BLOODY SPACE SO I STOP TOUCHING IT AND CRASHING MY BROWSER
     attempts++; // increments the attempts at generating the map.
@@ -89,20 +100,21 @@ function generateNoise() {
   } while ((landPercentage < minLandPercentage || landPercentage > maxLandPercentage) && attempts < maxAttempts);
 
   ctx.putImageData(imageData, 0, 0);
-  return { seed1, seed2 };
+  return { seed1, seed2, seed3 };
 }
 
 generateBtn.addEventListener('click', () => {
   const seeds = generateNoise();
   saveBtn.dataset.seed1 = seeds.seed1;
   saveBtn.dataset.seed2 = seeds.seed2;
+  saveBtn.dataset.seed3 = seeds.seed3; // Add this line
 });
 
 saveBtn.addEventListener('click', () => {
   const seed1 = saveBtn.dataset.seed1;
   const seed2 = saveBtn.dataset.seed2;
-  const filename = `Map_${seed1}_${seed2}.png`;
-
+  const seed3 = saveBtn.dataset.seed3; // Add this line
+  const filename = `Map_${seed1}_${seed2}_${seed3}.png`; // Update filename string
   canvas.toBlob((blob) => {
     window.saveAs(blob, filename); // Use window.saveAs instead
   }, 'image/png');
