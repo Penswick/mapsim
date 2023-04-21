@@ -12,13 +12,14 @@ function generateNoise() {
   let landPercentage;
   const minLandPercentage = 20; // Minimum percentage of land
   const maxLandPercentage = 40; // Maximum percentage of land
-  const maxAttempts = 10; // Maximum number of attempts to generate a map
+  const maxAttempts = 1; // Maximum number of attempts to generate a map
   let attempts = 0;
   const shallowWaterThreshold = 0.05; // change the deep/shallow water ratio
   let imageData;
   let seed1; // Declares seed1 
   let seed2; // Declares seed2 
   let seed3; // Declares seed3 
+  const numClusters = 4
   
   do {
     seed1 = Math.floor(Math.random() * 100000); // generates the first seed
@@ -35,8 +36,7 @@ function generateNoise() {
     totalPixels = 0;
 
     const layerData = generateLayerOne(canvas.width, canvas.height, seed1, seed2);
-    const mountainData = generateLayerTwo(canvas.width, canvas.height, seed3);
-
+    const mountainData = generateLayerTwo(canvas.width, canvas.height, seed3, numClusters);
 
     for (let y = 0; y < canvas.height; y++) {
       for (let x = 0; x < canvas.width; x++) {
@@ -72,9 +72,9 @@ function generateNoise() {
           imageData.data[idx + 2] = 50;
         } else if (mountainData[y * canvas.width + x] > mountainThreshold) {
           // Mountain
-          imageData.data[idx] = 255;
-          imageData.data[idx + 1] = 125;
-          imageData.data[idx + 2] = 125;
+          imageData.data[idx] = 180;
+          imageData.data[idx + 1] = 180;
+          imageData.data[idx + 2] = 180;
         } else {
           // Land
           imageData.data[idx] = 0;
