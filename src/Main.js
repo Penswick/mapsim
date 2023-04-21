@@ -4,7 +4,7 @@ import { generateLayerTwo } from './layers/LayerTwo.js';
 export const canvas = document.getElementById('myCanvas');
 const ctx = canvas.getContext('2d');
 const generateBtn = document.querySelector('.genBtn');
-const saveBtn = document.querySelector('.saveBtn'); // Add this line
+const saveBtn = document.querySelector('.saveBtn'); 
 
 function generateNoise() {
   let landPixels;
@@ -16,9 +16,9 @@ function generateNoise() {
   let attempts = 0;
   const shallowWaterThreshold = 0.05; // change the deep/shallow water ratio
   let imageData;
-  let seed1; // Declare seed1 here
-  let seed2; // Declare seed2 here
-  let seed3; // Declare seed3 here
+  let seed1; // Declares seed1 
+  let seed2; // Declares seed2 
+  let seed3; // Declares seed3 
   
   do {
     seed1 = Math.floor(Math.random() * 100000); // generates the first seed
@@ -29,7 +29,7 @@ function generateNoise() {
     const centerY = canvas.height / 2;
     const maxDistanceX = centerX;
     const maxDistanceY = centerY;
-    const bufferZone = 0.1; // Add a buffer zone around the canvas, where only water can be generated
+    const bufferZone = 0.1; // Controls the buffer zone around the canvas, where only water can be generated
 
     landPixels = 0;
     totalPixels = 0;
@@ -47,16 +47,16 @@ function generateNoise() {
         const distanceY = Math.abs(dy) / maxDistanceY;
         const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
-        // Blend the noise value with the radial gradient
+        // Blends the noise value with the radial gradient
         const gradient = Math.max(0, 1 - Math.min(Math.pow(distance / (1 - bufferZone), 4), 1));
         const blendedNoiseValue = combinedNoiseValue * gradient;
 
         const idx = (y * canvas.width + x) * 4;
-        const colorThreshold = 0.015; // change the water/land ratio
-        const coastlineThreshold = 0.06; // control the width of the coastline
-        const mountainThreshold = 0.6; // Adjust this value to control the mountain ratio
+        const colorThreshold = 0.015; // changes the water/land ratio
+        const coastlineThreshold = 0.06; // controls the width of the coastline
+        const mountainThreshold = 0.6; // controls the mountain ratio
 
-        if (blendedNoiseValue < colorThreshold) {
+        if (blendedNoiseValue < colorThreshold) { // Adjust these values to  color (R, G, B)
           // Deep water
           imageData.data[idx] = 0;
           imageData.data[idx + 1] = 0;
@@ -67,7 +67,7 @@ function generateNoise() {
           imageData.data[idx + 1] = 100;
           imageData.data[idx + 2] = 255;
         } else if (blendedNoiseValue < coastlineThreshold) {
-          imageData.data[idx] = 240; // Adjust these values to set the coastline color (R, G, B)
+          imageData.data[idx] = 240; 
           imageData.data[idx + 1] = 230;
           imageData.data[idx + 2] = 50;
         } else if (mountainData[y * canvas.width + x] > mountainThreshold) {
@@ -83,7 +83,7 @@ function generateNoise() {
           landPixels++;
         }
 
-        // Set the alpha channel value to 255
+        // Sets the alpha channel value
         imageData.data[idx + 3] = 255;
         totalPixels++;
       }
@@ -91,7 +91,7 @@ function generateNoise() {
 
     landPercentage = (landPixels / totalPixels) * 100;
     console.log(`Attempt ${attempts}: ${landPercentage}% land`);
-    console.log(`${seed1} ${seed2} ${seed3}`); // Updated console.log statement
+    console.log(`${seed1} ${seed2} ${seed3}`); 
 
     // GIVE THE ATTEMPTS COUNTER SOME BLOODY SPACE SO I STOP TOUCHING IT AND CRASHING MY BROWSER
     attempts++; // increments the attempts at generating the map.
@@ -107,16 +107,16 @@ generateBtn.addEventListener('click', () => {
   const seeds = generateNoise();
   saveBtn.dataset.seed1 = seeds.seed1;
   saveBtn.dataset.seed2 = seeds.seed2;
-  saveBtn.dataset.seed3 = seeds.seed3; // Add this line
+  saveBtn.dataset.seed3 = seeds.seed3; 
 });
 
 saveBtn.addEventListener('click', () => {
   const seed1 = saveBtn.dataset.seed1;
   const seed2 = saveBtn.dataset.seed2;
-  const seed3 = saveBtn.dataset.seed3; // Add this line
-  const filename = `Map_${seed1}_${seed2}_${seed3}.png`; // Update filename string
+  const seed3 = saveBtn.dataset.seed3; 
+  const filename = `Map_${seed1}_${seed2}_${seed3}.png`; // filename string
   canvas.toBlob((blob) => {
-    window.saveAs(blob, filename); // Use window.saveAs instead
+    window.saveAs(blob, filename); 
   }, 'image/png');
 });
 

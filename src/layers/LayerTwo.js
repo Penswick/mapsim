@@ -2,7 +2,7 @@ import PerlinNoise from '../PerlinNoise.js';
 
 export function generateLayerTwo(width, height, seed3) {
   const noiseGenerator = new PerlinNoise(seed3);
-  const scalingFactor = 0.1; // Change frequency for the mountain noise generator
+  const scalingFactor = 0.1; // Controls frequency for the mountain noise generator
 
   const layerData = new Float32Array(width * height);
 

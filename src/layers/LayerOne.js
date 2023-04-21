@@ -3,8 +3,8 @@ import PerlinNoise from '../PerlinNoise.js';
 export function generateLayerOne(width, height, seed1, seed2) {
   const noiseGenerator = new PerlinNoise(seed1);
   const noiseGenerator2 = new PerlinNoise(seed2);
-  const scalingFactor = 0.001; // change frequency for the first noise generator
-  const scalingFactor2 = 0.01; // change frequency for the second noise generator
+  const scalingFactor = 0.001; //  frequency for the first noise generator
+  const scalingFactor2 = 0.01; //  frequency for the second noise generator
 
   const layerData = new Float32Array(width * height);
 
