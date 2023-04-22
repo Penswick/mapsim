@@ -17,18 +17,57 @@ export function generateLayerTwo(width, height, seed3, numClusters = 3) {
       const combinedNoiseValue = calculateCombinedNoiseValue(noiseValue, clusterValue, numClusters);
 
       layerData[y * width + x] = combinedNoiseValue;
+
     }
   }
-
-  return layerData;
+    const smoothedMountainData = smoothMountainData(layerData, width, height, 5); // Try 3 iterations for better smoothing
+    return smoothedMountainData;
 }
 
 function calculateCombinedNoiseValue(noiseValue, clusterValue, numClusters) {
   // Determine the cluster influence based on the clusterValue and numClusters
-  const clusterInfluence = Math.floor((clusterValue + 1) * numClusters / 2);
+  const clusterInfluence = Math.floor((clusterValue + 1) * 5 * numClusters / 2);
 
   // Adjust the noiseValue based on the clusterInfluence
   const combinedNoiseValue = noiseValue * clusterInfluence;
 
   return combinedNoiseValue;
+}
+
+function smoothMountainData(mountainData, width, height, iterations = 1) {
+  for (let iteration = 0; iteration < iterations; iteration++) {
+    const newMountainData = new Float32Array(width * height);
+
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        let neighbors = 0;
+
+        // Check the neighboring pixels around the current pixel
+        for (let dy = -1; dy <= 1; dy++) {
+          for (let dx = -1; dx <= 1; dx++) {
+            const newX = x + dx;
+            const newY = y + dy;
+
+            if (newX >= 0 && newX < width && newY >= 0 && newY < height && !(dx === 0 && dy === 0)) {
+              if (mountainData[newY * width + newX] > 0.4) { // Use the same mountainThreshold value
+                neighbors++;
+              }
+            }
+          }
+        }
+
+        // If a pixel has at least X neighboring mountain pixels, set it as a mountain pixel
+        if (neighbors >= 3) {
+          newMountainData[y * width + x] = 1;
+        } else {
+          newMountainData[y * width + x] = mountainData[y * width + x];
+        }
+      }
+    }
+
+    // Overwrites the orginal data with the new, smoothed data.
+    mountainData = newMountainData;
+  }
+
+  return mountainData;
 }
