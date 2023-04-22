@@ -10,8 +10,8 @@ function generateNoise() {
   let landPixels;
   let totalPixels;
   let landPercentage;
-  const minLandPercentage = 20; // Minimum percentage of land
-  const maxLandPercentage = 40; // Maximum percentage of land
+  const minLandPercentage = 10; // Minimum percentage of land
+  const maxLandPercentage = 30; // Maximum percentage of land
   const maxAttempts = 1; // Maximum number of attempts to generate a map
   let attempts = 0;
   const shallowWaterThreshold = 0.05; // change the deep/shallow water ratio
@@ -54,7 +54,7 @@ function generateNoise() {
         const idx = (y * canvas.width + x) * 4;
         const colorThreshold = 0.015; // changes the water/land ratio
         const coastlineThreshold = 0.06; // controls the width of the coastline
-        const mountainThreshold = 0.6; // controls the mountain ratio
+        const mountainThreshold = 0.4; // controls the mountain ratio
 
         if (blendedNoiseValue < colorThreshold) { // Adjust these values to  color (R, G, B)
           // Deep water
