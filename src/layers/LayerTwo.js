@@ -3,8 +3,8 @@ import PerlinNoise from '../PerlinNoise.js';
 export function generateLayerTwo(width, height, seed3, numClusters = 3) {
   const noiseGenerator = new PerlinNoise(seed3);
   const clusterNoiseGenerator = new PerlinNoise(seed3 + 1); // Use a different seed for the clusters
-  const scalingFactor = 0.009; // Controls frequency for the mountain noise generator
-  const clusterScalingFactor = 0.05; // Controls frequency for the mountain cluster generator
+  const scalingFactor = 0.005; // Controls frequency for the mountain noise generator
+  const clusterScalingFactor = 0.03; // Controls frequency for the mountain cluster generator
 
   const layerData = new Float32Array(width * height);
 

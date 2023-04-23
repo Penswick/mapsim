@@ -10,8 +10,8 @@ function generateNoise() {
   let landPixels;
   let totalPixels;
   let landPercentage;
-  const minLandPercentage = 10; // Minimum percentage of land
-  const maxLandPercentage = 30; // Maximum percentage of land
+  const minLandPercentage = 20; // Minimum percentage of land
+  const maxLandPercentage = 90; // Maximum percentage of land
   const maxAttempts = 1; // Maximum number of attempts to generate a map
   let attempts = 0;
   const shallowWaterThreshold = 0.05; // change the deep/shallow water ratio
@@ -70,11 +70,13 @@ function generateNoise() {
           imageData.data[idx] = 240; 
           imageData.data[idx + 1] = 230;
           imageData.data[idx + 2] = 50;
+          landPixels++;
         } else if (mountainData[y * canvas.width + x] > mountainThreshold) {
           // Mountain
           imageData.data[idx] = 180;
           imageData.data[idx + 1] = 180;
           imageData.data[idx + 2] = 180;
+          landPixels++;
         } else {
           // Land
           imageData.data[idx] = 0;
@@ -90,7 +92,9 @@ function generateNoise() {
     }
 
     landPercentage = (landPixels / totalPixels) * 100;
-    console.log(`Attempt ${attempts}: ${landPercentage}% land`);
+    const nonWaterPixels = (totalPixels - (canvas.width * canvas.height * shallowWaterThreshold));
+    const nonWaterPercentage = (landPixels / nonWaterPixels) * 100;
+    console.log(`Attempt ${attempts}: ${nonWaterPercentage}% non-water`);    
     console.log(`${seed1} ${seed2} ${seed3}`); 
 
     // GIVE THE ATTEMPTS COUNTER SOME BLOODY SPACE SO I STOP TOUCHING IT AND CRASHING MY BROWSER
