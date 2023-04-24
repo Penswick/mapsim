@@ -10,9 +10,9 @@ function generateNoise() {
   let landPixels;
   let totalPixels;
   let landPercentage;
-  const minLandPercentage = 20; // Minimum percentage of land
+  const minLandPercentage = 40; // Minimum percentage of land
   const maxLandPercentage = 90; // Maximum percentage of land
-  const maxAttempts = 1; // Maximum number of attempts to generate a map
+  const maxAttempts = 10; // Maximum number of attempts to generate a map
   let attempts = 0;
   const shallowWaterThreshold = 0.05; // change the deep/shallow water ratio
   let imageData;

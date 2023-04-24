@@ -54,8 +54,7 @@ function smoothMountainData(mountainData, width, height, iterations = 1) {
               }
             }
           }
-        }
-
+      }
         // If a pixel has at least X neighboring mountain pixels, set it as a mountain pixel
         if (neighbors >= 3) {
           newMountainData[y * width + x] = 1;
