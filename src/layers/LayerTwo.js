@@ -1,10 +1,11 @@
 import PerlinNoise from '../PerlinNoise.js';
 
-export function generateLayerTwo(width, height, seed3, numClusters = 3) {
+export function generateLayerTwo(width, height, seed3, numClusters = 5) {
   const noiseGenerator = new PerlinNoise(seed3);
   const clusterNoiseGenerator = new PerlinNoise(seed3 + 1); // Use a different seed for the clusters
   const scalingFactor = 0.008; // Controls frequency for the mountain noise generator
   const clusterScalingFactor = 0.003; // Controls frequency for the mountain cluster generator
+  const globalMountainThreshold = 0.4; // Add a global threshold for mountains
 
   const layerData = new Float32Array(width * height);
 
@@ -19,19 +20,19 @@ export function generateLayerTwo(width, height, seed3, numClusters = 3) {
       layerData[y * width + x] = combinedNoiseValue;
     }
   }
-    const smoothedMountainData = smoothMountainData(layerData, width, height, 5); // Try 3 iterations for better smoothing
-    return smoothedMountainData;
+
+  const smoothedMountainData = smoothMountainData(layerData, width, height, 5); // Try 3 iterations for better smoothing
+  const filteredMountainData = filterMountainsByThreshold(smoothedMountainData, width, height, globalMountainThreshold);
+  return filteredMountainData;
 }
 
 function calculateCombinedNoiseValue(noiseValue, clusterValue, numClusters) {
-  // Determine the cluster influence based on the clusterValue and numClusters
-  const clusterInfluence = Math.floor((clusterValue + 1) * 5 * numClusters / 2);
-
-  // Adjust the noiseValue based on the clusterInfluence
-  const combinedNoiseValue = noiseValue * clusterInfluence;
+  // Adjust the noiseValue based on the weighted clusterValue
+  const combinedNoiseValue = noiseValue * (1 + clusterValue * numClusters);
 
   return combinedNoiseValue;
 }
+
 
 function smoothMountainData(mountainData, width, height, iterations = 1) {
   for (let iteration = 0; iteration < iterations; iteration++) {
@@ -48,14 +49,14 @@ function smoothMountainData(mountainData, width, height, iterations = 1) {
             const newY = y + dy;
 
             if (newX >= 0 && newX < width && newY >= 0 && newY < height && !(dx === 0 && dy === 0)) {
-              if (mountainData[newY * width + newX] > 0.4) { // Use the same mountainThreshold value
+              if (mountainData[newY * width + newX] > 0.1) { // Use the same mountainThreshold value
                 neighbors++;
               }
             }
           }
       }
         // If a pixel has at least X neighboring mountain pixels, set it as a mountain pixel
-        if (neighbors >= 3) {
+        if (neighbors >= 1) {
           newMountainData[y * width + x] = 1;
         } else {
           newMountainData[y * width + x] = mountainData[y * width + x];
@@ -70,4 +71,16 @@ function smoothMountainData(mountainData, width, height, iterations = 1) {
   return mountainData;
 }
 
+// Add a new function to filter mountains based on a global threshold
+function filterMountainsByThreshold(mountainData, width, height, threshold) {
+  const filteredData = new Float32Array(width * height);
 
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const value = mountainData[y * width + x];
+      filteredData[y * width + x] = value > threshold ? value : 0;
+    }
+  }
+
+  return filteredData;
+}
