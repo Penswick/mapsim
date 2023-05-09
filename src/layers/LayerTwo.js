@@ -1,6 +1,6 @@
 import PerlinNoise from '../PerlinNoise.js';
 
-export function generateLayerTwo(width, height, seed3, numClusters = 5) {
+export function generateLayerTwo(width, height, seed3, numClusters = 5, mountainBuffer = 0.1, landNoiseData) {
   const noiseGenerator = new PerlinNoise(seed3);
   const clusterNoiseGenerator = new PerlinNoise(seed3 + 1); // Use a different seed for the clusters
   const scalingFactor = 0.008; // Controls frequency for the mountain noise generator
@@ -13,11 +13,11 @@ export function generateLayerTwo(width, height, seed3, numClusters = 5) {
     for (let x = 0; x < width; x++) {
       const noiseValue = noiseGenerator.noise(x * scalingFactor, y * scalingFactor, 0);
       const clusterValue = clusterNoiseGenerator.noise(x * clusterScalingFactor, y * clusterScalingFactor, 0);
-
       // Calculate the combined noise value based on the cluster influence
-      const combinedNoiseValue = calculateCombinedNoiseValue(noiseValue, clusterValue, numClusters);
-
+      // Pass landNoiseData as an additional parameter to calculateCombinedNoiseValue
+      const combinedNoiseValue = calculateCombinedNoiseValue(noiseValue, clusterValue, numClusters, landNoiseData[y * width + x]);
       layerData[y * width + x] = combinedNoiseValue;
+      
     }
   }
 
@@ -26,12 +26,18 @@ export function generateLayerTwo(width, height, seed3, numClusters = 5) {
   return filteredMountainData;
 }
 
-function calculateCombinedNoiseValue(noiseValue, clusterValue, numClusters) {
+function calculateCombinedNoiseValue(noiseValue, clusterValue, numClusters, landNoiseValue) {
   // Adjust the noiseValue based on the weighted clusterValue
   const combinedNoiseValue = noiseValue * (1 + clusterValue * numClusters);
 
-  return combinedNoiseValue;
+  // Modify combinedNoiseValue based on landNoiseValue
+  const mountainCutoff = 0.8; // Increase this value to reduce mountains near the coastline
+  const adjustedNoiseValue = landNoiseValue < mountainCutoff ? combinedNoiseValue * (landNoiseValue / mountainCutoff) : combinedNoiseValue;
+
+  return adjustedNoiseValue;
 }
+
+
 
 
 function smoothMountainData(mountainData, width, height, iterations = 1) {
