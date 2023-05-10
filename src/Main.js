@@ -1,5 +1,6 @@
 import { generateLayerOne } from './layers/LayerOne.js';
 import { generateLayerTwo } from './layers/LayerTwo.js';
+import { generateLayerThree } from './layers/LayerThree.js'; // Add this import
 
 export const canvas = document.getElementById('myCanvas');
 const ctx = canvas.getContext('2d');
@@ -12,7 +13,7 @@ function generateNoise() {
   let landPercentage;
   const minLandPercentage = 40; // Minimum percentage of land
   const maxLandPercentage = 90; // Maximum percentage of land
-  const maxAttempts = 10; // Maximum number of attempts to generate a map
+  const maxAttempts = 1; // Maximum number of attempts to generate a map
   let attempts = 0;
   const shallowWaterThreshold = 0.05; // change the deep/shallow water ratio
   let imageData;
@@ -20,6 +21,8 @@ function generateNoise() {
   let seed2; // Declares seed2 
   let seed3; // Declares seed3 
   const numClusters = 4
+
+
   
   do {
     seed1 = Math.floor(Math.random() * 100000); // generates the first seed
@@ -34,29 +37,32 @@ function generateNoise() {
 
     landPixels = 0;
     totalPixels = 0;
-
+    
+    // generates data related to layers.
     const layerData = generateLayerOne(canvas.width, canvas.height, seed1, seed2);
     const mountainData = generateLayerTwo(canvas.width, canvas.height, seed3, numClusters, 0.1, layerData); 
-
+    const forestData = generateLayerThree(canvas.width, canvas.height, seed3, layerData);
+    
     for (let y = 0; y < canvas.height; y++) {
       for (let x = 0; x < canvas.width; x++) {
+        const biomeValue = forestData[y * canvas.width + x]; // Move this line here
         const combinedNoiseValue = layerData[y * canvas.width + x];
         const dx = x - centerX;
         const dy = y - centerY;
         const distanceX = Math.abs(dx) / maxDistanceX;
         const distanceY = Math.abs(dy) / maxDistanceY;
         const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-
+    
         // Blends the noise value with the radial gradient
         const gradient = Math.max(0, 1 - Math.min(Math.pow(distance / (1 - bufferZone), 4), 1));
         const blendedNoiseValue = combinedNoiseValue * gradient;
-
+    
         const idx = (y * canvas.width + x) * 4;
-        const colorThreshold = 0.015; // changes the water/land ratio
-        const coastlineThreshold = 0.06; // controls the width of the coastline
-        const mountainThreshold = 0.4; // controls the mountain ratio
-
-        if (blendedNoiseValue < colorThreshold) { // Adjust these values to  color (R, G, B)
+        const colorThreshold = 0.015;
+        const coastlineThreshold = 0.06;
+        const mountainThreshold = 0.4;
+        
+        if (blendedNoiseValue < colorThreshold) {
           // Deep water
           imageData.data[idx] = 0;
           imageData.data[idx + 1] = 0;
@@ -67,7 +73,7 @@ function generateNoise() {
           imageData.data[idx + 1] = 100;
           imageData.data[idx + 2] = 255;
         } else if (blendedNoiseValue < coastlineThreshold) {
-          imageData.data[idx] = 240; 
+          imageData.data[idx] = 240;
           imageData.data[idx + 1] = 230;
           imageData.data[idx + 2] = 50;
           landPixels++;
@@ -77,6 +83,24 @@ function generateNoise() {
           imageData.data[idx + 1] = 180;
           imageData.data[idx + 2] = 180;
           landPixels++;
+        } else if (biomeValue === 1) {
+          // Forest
+          imageData.data[idx] = 0;
+          imageData.data[idx + 1] = 150;
+          imageData.data[idx + 2] = 0;
+          landPixels++;
+        } else if (biomeValue === 2) {
+          // Tundra
+          imageData.data[idx] = 210;
+          imageData.data[idx + 1] = 180;
+          imageData.data[idx + 2] = 140;
+          landPixels++;
+        } else if (biomeValue === 3) {
+          // Desert
+          imageData.data[idx] = 255;
+          imageData.data[idx + 1] = 255;
+          imageData.data[idx + 2] = 102;
+          landPixels++;
         } else {
           // Land
           imageData.data[idx] = 0;
@@ -84,12 +108,13 @@ function generateNoise() {
           imageData.data[idx + 2] = 0;
           landPixels++;
         }
-
+    
         // Sets the alpha channel value
         imageData.data[idx + 3] = 255;
         totalPixels++;
       }
     }
+    
 
     landPercentage = (landPixels / totalPixels) * 100;
     const nonWaterPixels = (totalPixels - (canvas.width * canvas.height * shallowWaterThreshold));
@@ -103,11 +128,11 @@ function generateNoise() {
 
   } while ((landPercentage < minLandPercentage || landPercentage > maxLandPercentage) && attempts < maxAttempts);
   
-// Call the removeMountainsTouchingCoast function before putting the image data onto the canvas
-removeMountainsTouchingCoast(imageData, canvas.width, canvas.height);
-ctx.putImageData(imageData, 0, 0);
-
+  // Call the removeMountainsTouchingCoast function before putting the image data onto the canvas
+  removeMountainsTouchingCoast(imageData, canvas.width, canvas.height);
   ctx.putImageData(imageData, 0, 0);
+
+
   return { seed1, seed2, seed3 };
 }
 
@@ -216,7 +241,6 @@ function isAdjacentToColor(imageData, x, y, width, height, targetColor) {
 
   return false;
 }
-
 
 generateBtn.addEventListener('click', () => {
   const seeds = generateNoise();
