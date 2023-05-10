@@ -13,10 +13,10 @@ export function generateLayerThree(width, height, seed3, landNoiseData) {
     console.log("Tundra threshold:", tundraThreshold);
     console.log("Desert threshold:", desertThreshold);
 
-    let forestCount = 1000;
-    let tundraCount = 1500;
-    let desertCount = 2500;
-    let defaultCount = 2120;
+    let forestCount = 0;
+    let tundraCount = 0;
+    let desertCount = 0;
+    let defaultCount = 0;
   
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {

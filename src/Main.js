@@ -42,10 +42,9 @@ function generateNoise() {
     const layerData = generateLayerOne(canvas.width, canvas.height, seed1, seed2);
     const mountainData = generateLayerTwo(canvas.width, canvas.height, seed3, numClusters, 0.1, layerData); 
     const forestData = generateLayerThree(canvas.width, canvas.height, seed3, layerData);
-    
+
     for (let y = 0; y < canvas.height; y++) {
       for (let x = 0; x < canvas.width; x++) {
-        const biomeValue = forestData[y * canvas.width + x]; // Move this line here
         const combinedNoiseValue = layerData[y * canvas.width + x];
         const dx = x - centerX;
         const dy = y - centerY;
@@ -61,7 +60,11 @@ function generateNoise() {
         const colorThreshold = 0.015;
         const coastlineThreshold = 0.06;
         const mountainThreshold = 0.4;
-        
+    
+        // Get the forest noise value from the forest data
+        const biomeValue = forestData[y * canvas.width + x];
+
+
         if (blendedNoiseValue < colorThreshold) {
           // Deep water
           imageData.data[idx] = 0;
@@ -85,27 +88,27 @@ function generateNoise() {
           landPixels++;
         } else if (biomeValue === 1) {
           // Forest
-          imageData.data[idx] = 0;
-          imageData.data[idx + 1] = 150;
+          imageData.data[idx] = 250;
+          imageData.data[idx + 1] = 0;
           imageData.data[idx + 2] = 0;
           landPixels++;
         } else if (biomeValue === 2) {
           // Tundra
-          imageData.data[idx] = 210;
-          imageData.data[idx + 1] = 180;
-          imageData.data[idx + 2] = 140;
+          imageData.data[idx] = 0;
+          imageData.data[idx + 1] = 0;
+          imageData.data[idx + 2] = 250;
           landPixels++;
         } else if (biomeValue === 3) {
           // Desert
-          imageData.data[idx] = 255;
-          imageData.data[idx + 1] = 255;
-          imageData.data[idx + 2] = 102;
+          imageData.data[idx] = 237;
+          imageData.data[idx + 1] = 201;
+          imageData.data[idx + 2] = 175;
           landPixels++;
         } else {
           // Land
-          imageData.data[idx] = 0;
-          imageData.data[idx + 1] = 150;
-          imageData.data[idx + 2] = 0;
+          imageData.data[idx] = 34;
+          imageData.data[idx + 1] = 139;
+          imageData.data[idx + 2] = 34;
           landPixels++;
         }
     

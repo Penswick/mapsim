@@ -7,7 +7,7 @@ The development will be split into 2 main chunks. One focused on the primary fea
 **Primary features:**
    - Terrain Generation :heavy_check_mark:
    - Sea level :heavy_check_mark:
-   - Mountains 
+   - Mountains :heavy_check_mark:
    - Biomes
 
 **Secondary features:**
