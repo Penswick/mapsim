@@ -4,7 +4,7 @@ export function generateLayerTwo(width, height, seed3, numClusters = 5, mountain
   const noiseGenerator = new PerlinNoise(seed3);
   const clusterNoiseGenerator = new PerlinNoise(seed3 + 1); // Use a different seed for the clusters
   const scalingFactor = 0.008; // Controls frequency for the mountain noise generator
-  const clusterScalingFactor = 0.003; // Controls frequency for the mountain cluster generator
+  const clusterScalingFactor = 0.008; // Controls frequency for the mountain cluster generator
   const globalMountainThreshold = 0.4; // Add a global threshold for mountains
 
   const layerData = new Float32Array(width * height);

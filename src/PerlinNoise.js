@@ -1,4 +1,4 @@
-class PerlinNoise {
+export default class PerlinNoise {
     constructor(seed) {
       this.seed = seed;
       this.permutation = this.generatePermutation(this.seedFunc(seed));
@@ -89,6 +89,3 @@ class PerlinNoise {
         );
     }
   }
-  
-  export default PerlinNoise;
-  
