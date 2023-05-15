@@ -264,3 +264,17 @@ saveBtn.dataset.seed1 = initialSeeds.seed1;
 saveBtn.dataset.seed2 = initialSeeds.seed2;
 saveBtn.dataset.seed3 = initialSeeds.seed3;
 saveBtn.dataset.seed4 = initialSeeds.seed4; 
+
+const toggleTempMapBtn = document.querySelector('.toggleTempMapBtn');
+const heatMapContainer = document.querySelector('#heatMapContainer');
+
+toggleTempMapBtn.addEventListener('click', function() {
+  // If the heat map is currently displayed, hide it
+  if (heatMapContainer.style.display !== 'none') {
+    heatMapContainer.style.display = 'none';
+  } 
+  // If the heat map is currently hidden, show it
+  else {
+    heatMapContainer.style.display = 'block';
+  }
+});
