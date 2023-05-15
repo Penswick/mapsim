@@ -7,6 +7,7 @@ const ctx = canvas.getContext('2d');
 const generateBtn = document.querySelector('.genBtn');
 const saveBtn = document.querySelector('.saveBtn'); 
 
+
 function generateNoise() {
   let landPixels;
   let totalPixels;
@@ -20,14 +21,15 @@ function generateNoise() {
   let seed1; // Declares seed1 
   let seed2; // Declares seed2 
   let seed3; // Declares seed3 
+  let seed4 = Math.floor(Math.random() * 100000);
   const numClusters = 4
-
-
+  const heatMapContainer = document.getElementById('heatMapContainer'); // Add this line to get the heatMapContainer element
   
   do {
     seed1 = Math.floor(Math.random() * 100000); // generates the first seed
     seed2 = Math.floor(Math.random() * 100000); // generates the second seed
     seed3 = Math.floor(Math.random() * 100000); // generates the third seed
+    seed4 = Math.floor(Math.random() * 100000); // generates the fourth seed
     imageData = ctx.createImageData(canvas.width, canvas.height);
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
@@ -41,8 +43,7 @@ function generateNoise() {
     // generates data related to layers.
     const layerData = generateLayerOne(canvas.width, canvas.height, seed1, seed2);
     const mountainData = generateLayerTwo(canvas.width, canvas.height, seed3, numClusters, 0.1, layerData); 
-    const forestData = generateLayerThree(canvas.width, canvas.height, seed3, layerData);
-
+    const forestData = generateLayerThree(canvas.width, canvas.height, seed4, layerData, heatMapContainer); // Pass heatMapContainer as an argument
     for (let y = 0; y < canvas.height; y++) {
       for (let x = 0; x < canvas.width; x++) {
         const combinedNoiseValue = layerData[y * canvas.width + x];
@@ -117,7 +118,6 @@ function generateNoise() {
         totalPixels++;
       }
     }
-    
 
     landPercentage = (landPixels / totalPixels) * 100;
     const nonWaterPixels = (totalPixels - (canvas.width * canvas.height * shallowWaterThreshold));
@@ -130,13 +130,12 @@ function generateNoise() {
     // GIVE THE ATTEMPTS COUNTER SOME BLOODY SPACE SO I STOP TOUCHING IT AND CRASHING MY BROWSER
 
   } while ((landPercentage < minLandPercentage || landPercentage > maxLandPercentage) && attempts < maxAttempts);
-  
   // Call the removeMountainsTouchingCoast function before putting the image data onto the canvas
   removeMountainsTouchingCoast(imageData, canvas.width, canvas.height);
   ctx.putImageData(imageData, 0, 0);
 
 
-  return { seed1, seed2, seed3 };
+  return { seed1, seed2, seed3, seed4 };
 }
 
 function removeMountainsTouchingCoast(imageData, width, height) {
@@ -181,7 +180,6 @@ function getPixelColor(imageData, x, y) {
   };
 }
 
-
 function floodFill(imageData, x, y, width, height, targetColor, replacementColor) {
   if (isColorEqual(targetColor, replacementColor)) {
     return;
@@ -211,9 +209,6 @@ function setPixelColor(imageData, x, y, width, height, color) {
   imageData.data[idx + 1] = color.g;
   imageData.data[idx + 2] = color.b;
 }
-
-
-
 
 function isColorEqual(color1, color2) {
   return color1.r === color2.r && color1.g === color2.g && color1.b === color2.b;
@@ -245,24 +240,27 @@ function isAdjacentToColor(imageData, x, y, width, height, targetColor) {
   return false;
 }
 
-generateBtn.addEventListener('click', () => {
+generateBtn.addEventListener("click", () => {
   const seeds = generateNoise();
   saveBtn.dataset.seed1 = seeds.seed1;
   saveBtn.dataset.seed2 = seeds.seed2;
-  saveBtn.dataset.seed3 = seeds.seed3; 
+  saveBtn.dataset.seed3 = seeds.seed3;
+  saveBtn.dataset.seed4 = seeds.seed4; 
 });
 
-saveBtn.addEventListener('click', () => {
+saveBtn.addEventListener("click", () => {
   const seed1 = saveBtn.dataset.seed1;
   const seed2 = saveBtn.dataset.seed2;
-  const seed3 = saveBtn.dataset.seed3; 
-  const filename = `Map_${seed1}_${seed2}_${seed3}.png`; // filename string
+  const seed3 = saveBtn.dataset.seed3;
+  const seed4 = saveBtn.dataset.seed4; 
+  const filename = `Map_${seed1}_${seed2}_${seed3}_${seed4}.png`; // Update filename string
   canvas.toBlob((blob) => {
-    window.saveAs(blob, filename); 
-  }, 'image/png');
+    window.saveAs(blob, filename);
+  }, "image/png");
 });
-
 
 const initialSeeds = generateNoise();
 saveBtn.dataset.seed1 = initialSeeds.seed1;
 saveBtn.dataset.seed2 = initialSeeds.seed2;
+saveBtn.dataset.seed3 = initialSeeds.seed3;
+saveBtn.dataset.seed4 = initialSeeds.seed4; 

@@ -10,10 +10,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js"></script>
 </head>
 <body>
-    <canvas id="myCanvas" width="1900" height="800"></canvas>
+    <div class="map-container">
+        <canvas id="myCanvas" width="1900" height="800"></canvas>
+        <div id="heatMapContainer"></div>
+    </div>
     <div class="options__wrapper">
         <button class="genBtn">Generate</button>
         <button class="saveBtn">Save Map</button>
+        <button class="toggleTempMapBtn">Toggle Temperature Map</button>
     </div>
     <script type="module" src="src/Main.js"></script>
 </body>

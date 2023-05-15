@@ -1,7 +1,7 @@
 import PerlinNoise from '../PerlinNoise.js';
 
-export function generateLayerThree(width, height, seed3, landNoiseData) {
-  const noiseGenerator = new PerlinNoise(seed3);
+export function generateLayerThree(width, height, seed4, landNoiseData, heatMapContainer) {
+  const noiseGenerator = new PerlinNoise(seed4);
   const scalingFactor = 0.01;
   const forestThreshold = 0.55;
   const tundraThreshold = 0.45; // New threshold for tundra
@@ -10,7 +10,7 @@ export function generateLayerThree(width, height, seed3, landNoiseData) {
   const layerData = new Float32Array(width * height);
 
   // Temperature map related variables
-  const temperatureSeed = seed3 + 1000; // Use a different seed for temperature map
+  const temperatureSeed = seed4 + 1000; // Use a different seed for temperature map
   const temperatureGenerator = new PerlinNoise(temperatureSeed);
   const temperatureScalingFactor = 0.05;
   const temperatureGradient = 1.5 / height; // Adjust this value to control the gradient
@@ -47,21 +47,27 @@ export function generateLayerThree(width, height, seed3, landNoiseData) {
     }
   }
 
-  // Simple visualization of the temperature map
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  document.body.appendChild(canvas);
-  const ctx = canvas.getContext('2d');
+// Simple visualization of the temperature map
+const canvas = document.createElement('canvas');
+canvas.width = width;
+canvas.height = height;
+heatMapContainer.innerHTML = ''; // Clear the heatMapContainer
+heatMapContainer.appendChild(canvas); // Append the new canvas to the heatMapContainer
+const ctx = canvas.getContext('2d');
 
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const temperatureWithGradient = temperatureGenerator.noise(x * temperatureScalingFactor, y * temperatureScalingFactor, 0) - y * temperatureGradient;
-      const colorValue = (temperatureWithGradient + 1) * 0.5 * 255;
-      ctx.fillStyle = `rgb(${colorValue}, ${colorValue}, ${colorValue})`;
-      ctx.fillRect(x, y, 1, 1);
-    }
+for (let y = 0; y < height; y++) {
+  for (let x = 0; x < width; x++) {
+    const temperatureWithGradient = temperatureGenerator.noise(x * temperatureScalingFactor, y * temperatureScalingFactor, 0) - y * temperatureGradient;
+    const colorValue = (temperatureWithGradient + 1) * 0.5;
+    const r = (1 - colorValue) * 150;
+    const g = 0;
+    const b = colorValue * 150;
+    ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+    ctx.fillRect(x, y, 1, 1);
   }
+}
+
+
 
   console.log("Forest count:", forestCount);
   console.log("Tundra count:", tundraCount);
