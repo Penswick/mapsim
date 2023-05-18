@@ -22,7 +22,7 @@ export function generateLayerThree(width, height, seed4, landNoiseData, heatMapC
   const temperatureSeed = seed4 + 1000; // Use a different seed for temperature map
   const temperatureGenerator = new PerlinNoise(temperatureSeed);
   const temperatureScalingFactor = 0.002;
-  const temperatureGradient = 1.9 / height; // Adjust this value to control the gradient
+  const temperatureGradient = 0.4 / height; // Adjust this value to control the gradient
   
   let forestCount = 0;
   let tundraCount = 0;
@@ -37,10 +37,10 @@ export function generateLayerThree(width, height, seed4, landNoiseData, heatMapC
       // Generate temperature value and apply gradient
       const temperatureValue = threshold(
         temperatureGenerator.noise(x * temperatureScalingFactor, y * temperatureScalingFactor, 0),
-        [0.2, 0.5, 0.8] // example levels
+        [0.4, 0.7] // 
       );
       const temperatureWithGradient = temperatureValue - y * temperatureGradient;
-      // Adjusted biome placement logic that depends on temperatureWithGradient
+      //  biome placement logic that depends on temperatureWithGradient
       if (noiseValue > forestThreshold && landValue > 0.06 && temperatureWithGradient > 0.5) {
         layerData[y * width + x] = 1; // Forest
         forestCount++;
