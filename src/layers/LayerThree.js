@@ -29,6 +29,13 @@ export function generateLayerThree(width, height, seed4, landNoiseData, heatMapC
   let desertCount = 0;
   let defaultCount = 0;
 
+  const anchorPoints = [
+    { x: width / 2, y: 0, temperature: 0, name: "N" }, // Top middle (cold)
+    { x: width / 2, y: height, temperature: 80, name: "S" }, // Bottom middle (hot)
+    { x: width, y: height / 2, temperature: Math.random() * 50 + 10, name: "E" }, // Middle right
+    { x: 0, y: height / 2, temperature: Math.random() * 50 + 10, name: "W" } // Middle left
+  ];  
+
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const noiseValue = noiseGenerator.noise(x * scalingFactor, y * scalingFactor, 0);
@@ -57,8 +64,6 @@ export function generateLayerThree(width, height, seed4, landNoiseData, heatMapC
     }
   }
   
-  
-
 // Simple visualization of the temperature map
 const canvas = document.createElement('canvas');
 canvas.width = width;
@@ -78,6 +83,18 @@ for (let y = 0; y < height; y++) {
     ctx.fillRect(x, y, 1, 1);
   }
 }
+
+const fontSize = 20;
+ctx.font = `${fontSize}px Arial`;
+ctx.fillStyle = "white";
+for (let anchorPoint of anchorPoints) {
+  let offsetX = 0, offsetY = fontSize;
+  if (anchorPoint.x === width) offsetX = -ctx.measureText(anchorPoint.name).width;
+  if (anchorPoint.y === 0) offsetY = fontSize; // Change the offset to be equal to fontSize for 'N'
+  if (anchorPoint.y === height) offsetY = -2;
+  ctx.fillText(anchorPoint.name, anchorPoint.x + offsetX, anchorPoint.y + offsetY);
+}
+
   console.log("Forest count:", forestCount);
   console.log("Tundra count:", tundraCount);
   console.log("Desert count:", desertCount);
