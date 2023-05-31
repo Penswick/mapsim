@@ -1,42 +1,63 @@
-import PerlinNoise from '../PerlinNoise.js';
-
-export function generateLayerThree(width, height, seed4, landNoiseData, heatMapContainer) {
+export function generateLayerThree(width, height, seed4, heatMapContainer) {
   const layerData = new Float32Array(width * height);
   
-  const nWeight = 10;
-  const sWeight = 80;
-  // E and W weights should be random between 30 and 60
-  const eWeight = Math.floor(Math.random() * (60 - 30 + 1)) + 30; 
-  const wWeight = Math.floor(Math.random() * (60 - 30 + 1)) + 30;
-
-  // Temperature map related variables
-  const temperatureSeed = seed4 + 1000; // Use a different seed for temperature map
-  const temperatureGenerator = new PerlinNoise(temperatureSeed);
-  const temperatureScalingFactor = 0.002;
-  const temperatureGradient = 0.4 / height; // Adjust this value to control the gradient
-
   let forestCount = 0;
   let tundraCount = 0;
   let desertCount = 0;
   let defaultCount = 0;
 
+  // Create a 2D array to store the random numbers for each cell
+  const cellValues = Array.from(Array(height), () => new Array(width));
+
+  // Define the size of the grid cells
+  const cellSize = 25;
+
+  // Create a canvas for the heatmap grid
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+
+  // Draw the grid on the canvas
+  ctx.strokeStyle = 'black'; // Set grid color
+  ctx.lineWidth = 0.5; // Set grid line width
+
+  ctx.font = 'bold 14px Arial'; // Set font for numbers
+  ctx.fillStyle = 'white'; // Set color for numbers
+
+  for (let x = 0; x <= width; x += cellSize) {
+    for (let y = 0; y <= height; y += cellSize) {
+      ctx.strokeRect(x, y, cellSize, cellSize);
+
+      // Generate a random number between -5 and 5
+      const number = Math.floor(Math.random() * 11) - 5; 
+
+      // Store the random number for this cell
+      cellValues[Math.floor(y/cellSize)][Math.floor(x/cellSize)] = number;
+
+      // Calculate the center position of each cell for the text
+      const textX = x + cellSize / 2;
+      const textY = y + cellSize / 2;
+
+      // Add the number to the center of the cell
+      ctx.fillText(number, textX, textY);
+    }
+  }
+
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      const landValue = landNoiseData[y * width + x];
-  
-      // Generate temperature value and apply gradient
-      const temperatureValue = temperatureGenerator.noise(x * temperatureScalingFactor, y * temperatureScalingFactor, 0);
-      const temperatureWithGradient = temperatureValue - y * temperatureGradient;
+      // Retrieve the value for this cell
+      const cellValue = cellValues[Math.floor(y/cellSize)][Math.floor(x/cellSize)];
 
-      // Biome placement logic that depends on temperatureWithGradient
-      if (landValue > 0.06 && temperatureWithGradient <= 0.6 && temperatureWithGradient > 0.4) {
-        layerData[y * width + x] = 1; // Forest
-        forestCount++;
-      } else if (landValue > 0.06 && temperatureWithGradient <= 0.2) {
-        layerData[y * width + x] = 2; // Tundra
+      // Biome placement logic
+      if (cellValue >= -5 && cellValue <= -2) {
+        layerData[y * width + x] = 4; // Tundra
         tundraCount++;
-      } else if (landValue > 0.06 && temperatureWithGradient >= 0.8) {
-        layerData[y * width + x] = 3; // Desert
+      } else if (cellValue >= -1 && cellValue <= 3) {
+        layerData[y * width + x] = 2; // Forest
+        forestCount++;
+      } else if (cellValue >= 4 && cellValue <= 5) {
+        layerData[y * width + x] = 1; // Desert
         desertCount++;
       } else {
         layerData[y * width + x] = 0; // Default
@@ -44,32 +65,6 @@ export function generateLayerThree(width, height, seed4, landNoiseData, heatMapC
       }
     }
   }
-  
-  // Simplified visualization of the temperature map
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext('2d');
-
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const temperatureWithGradient = temperatureGenerator.noise(x * temperatureScalingFactor, y * temperatureScalingFactor, 0) - y * temperatureGradient;
-      const colorValue = (temperatureWithGradient + 1) * 0.5;
-      const r = (1 - colorValue) * 150;
-      const g = 0;
-      const b = colorValue * 150;
-      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-      ctx.fillRect(x, y, 1, 1);
-    }
-  }
-
-  // Draw anchor points
-  ctx.font = '30px Arial';
-  ctx.fillStyle = 'white';
-  ctx.fillText('N', width / 2, 30); // North
-  ctx.fillText('S', width / 2, height - 10); // South
-  ctx.fillText('W', 10, height / 2); // West
-  ctx.fillText('E', width - 20, height / 2); // East
 
   heatMapContainer.innerHTML = ''; // Clear the heatMapContainer
   heatMapContainer.appendChild(canvas); // Append the new canvas to the heatMapContainer

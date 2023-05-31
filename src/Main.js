@@ -16,14 +16,14 @@ function generateNoise() {
   const maxLandPercentage = 90; // Maximum percentage of land
   const maxAttempts = 1; // Maximum number of attempts to generate a map
   let attempts = 0;
-  const shallowWaterThreshold = 0.05; // change the deep/shallow water ratio
+  const shallowWaterThreshold = 0.05; // controls the deep/shallow water ratio
   let imageData;
   let seed1; // Declares seed1 
   let seed2; // Declares seed2 
   let seed3; // Declares seed3 
   let seed4 = Math.floor(Math.random() * 100000);
   const numClusters = 4
-  const heatMapContainer = document.getElementById('heatMapContainer'); // Add this line to get the heatMapContainer element
+  const heatMapContainer = document.getElementById('heatMapContainer'); 
   
   do {
     seed1 = Math.floor(Math.random() * 100000); // generates the first seed
@@ -43,7 +43,8 @@ function generateNoise() {
     // generates data related to layers.
     const layerData = generateLayerOne(canvas.width, canvas.height, seed1, seed2);
     const mountainData = generateLayerTwo(canvas.width, canvas.height, seed3, numClusters, 0.1, layerData); 
-    const forestData = generateLayerThree(canvas.width, canvas.height, seed4, layerData, heatMapContainer); // Pass heatMapContainer as an argument
+    const forestData = generateLayerThree(canvas.width, canvas.height, seed4, heatMapContainer); // Pass heatMapContainer as an argument
+
     for (let y = 0; y < canvas.height; y++) {
       for (let x = 0; x < canvas.width; x++) {
         const combinedNoiseValue = layerData[y * canvas.width + x];
@@ -62,7 +63,7 @@ function generateNoise() {
         const coastlineThreshold = 0.06;
         const mountainThreshold = 0.4;
     
-        // Get the forest noise value from the forest data
+        // Gets the forest noise value from the forest data
         const biomeValue = forestData[y * canvas.width + x];
 
 
@@ -95,9 +96,9 @@ function generateNoise() {
           landPixels++;
         } else if (biomeValue === 2) {
           // Tundra
-          imageData.data[idx] = 0;
-          imageData.data[idx + 1] = 0;
-          imageData.data[idx + 2] = 250;
+          imageData.data[idx] = 50;
+          imageData.data[idx + 1] = 100;
+          imageData.data[idx + 2] = 210;
           landPixels++;
         } else if (biomeValue === 3) {
           // Desert
