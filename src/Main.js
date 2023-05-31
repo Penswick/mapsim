@@ -254,7 +254,7 @@ saveBtn.addEventListener("click", () => {
   const seed2 = saveBtn.dataset.seed2;
   const seed3 = saveBtn.dataset.seed3;
   const seed4 = saveBtn.dataset.seed4; 
-  const filename = `Map_${seed1}_${seed2}_${seed3}_${seed4}.png`; // Update filename string
+  const filename = `Map_${seed1}_${seed2}_${seed3}_${seed4}.png`; // Updates filename string
   canvas.toBlob((blob) => {
     window.saveAs(blob, filename);
   }, "image/png");

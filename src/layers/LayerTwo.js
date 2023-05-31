@@ -13,7 +13,7 @@ export function generateLayerTwo(width, height, seed3, numClusters = 5, mountain
     for (let x = 0; x < width; x++) {
       const noiseValue = noiseGenerator.noise(x * scalingFactor, y * scalingFactor, 0);
       const clusterValue = clusterNoiseGenerator.noise(x * clusterScalingFactor, y * clusterScalingFactor, 0);
-      // Calculate the combined noise value based on the cluster influence
+      // Calculates the combined noise value based on the cluster influence
       // Pass landNoiseData as an additional parameter to calculateCombinedNoiseValue
       const combinedNoiseValue = calculateCombinedNoiseValue(noiseValue, clusterValue, numClusters, landNoiseData[y * width + x]);
       layerData[y * width + x] = combinedNoiseValue;
@@ -77,7 +77,7 @@ function smoothMountainData(mountainData, width, height, iterations = 1) {
   return mountainData;
 }
 
-// Add a new function to filter mountains based on a global threshold
+// Add a new function to filter mountains based on a global threshold. Gods above, this was such a nightmare.
 function filterMountainsByThreshold(mountainData, width, height, threshold) {
   const filteredData = new Float32Array(width * height);
 

@@ -9,7 +9,7 @@ export function generateLayerThree(width, height, seed4, heatMapContainer) {
   // Create a 2D array to store the random numbers for each cell
   const cellValues = Array.from(Array(height), () => new Array(width));
 
-  // Define the size of the grid cells
+  // Define the size of the grid cells. Don't go below 2. Default is 25.
   const cellSize = 25;
 
   // Create a canvas for the heatmap grid
