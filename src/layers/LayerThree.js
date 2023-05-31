@@ -23,7 +23,7 @@ export function generateLayerThree(width, height, seed4, heatMapContainer) {
   ctx.lineWidth = 0.5; // Set grid line width
 
   ctx.font = 'bold 14px Arial'; // Set font for numbers
-  ctx.fillStyle = 'white'; // Set color for numbers
+  ctx.fillStyle = 'black'; // Set color for numbers
 
   for (let x = 0; x <= width; x += cellSize) {
     for (let y = 0; y <= height; y += cellSize) {

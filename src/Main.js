@@ -25,6 +25,7 @@ function generateNoise() {
   const numClusters = 4
   const heatMapContainer = document.getElementById('heatMapContainer'); 
   
+  
   do {
     seed1 = Math.floor(Math.random() * 100000); // generates the first seed
     seed2 = Math.floor(Math.random() * 100000); // generates the second seed
@@ -120,6 +121,10 @@ function generateNoise() {
       }
     }
 
+    // Call the removeMountainsTouchingCoast function before putting the image data onto the canvas
+    removeMountainsTouchingCoast(imageData, canvas.width, canvas.height);
+    ctx.putImageData(imageData, 0, 0);
+
     landPercentage = (landPixels / totalPixels) * 100;
     const nonWaterPixels = (totalPixels - (canvas.width * canvas.height * shallowWaterThreshold));
     const nonWaterPercentage = (landPixels / nonWaterPixels) * 100;
@@ -131,9 +136,7 @@ function generateNoise() {
     // GIVE THE ATTEMPTS COUNTER SOME BLOODY SPACE SO I STOP TOUCHING IT AND CRASHING MY BROWSER
 
   } while ((landPercentage < minLandPercentage || landPercentage > maxLandPercentage) && attempts < maxAttempts);
-  // Call the removeMountainsTouchingCoast function before putting the image data onto the canvas
-  removeMountainsTouchingCoast(imageData, canvas.width, canvas.height);
-  ctx.putImageData(imageData, 0, 0);
+
 
 
   return { seed1, seed2, seed3, seed4 };
@@ -196,6 +199,9 @@ function floodFill(imageData, x, y, width, height, targetColor, replacementColor
     if (isColorEqual(currentColor, targetColor)) {
       setPixelColor(imageData, x, y, width, height, replacementColor);
 
+      // Keep the alpha value as it is for the land pixels
+      imageData.data[(y * width + x) * 4 + 3] = 255;
+
       if (x > 0) stack.push({ x: x - 1, y });
       if (x < width - 1) stack.push({ x: x + 1, y });
       if (y > 0) stack.push({ x, y: y - 1 });
@@ -203,6 +209,8 @@ function floodFill(imageData, x, y, width, height, targetColor, replacementColor
     }
   }
 }
+
+
 
 function setPixelColor(imageData, x, y, width, height, color) {
   const idx = (y * width + x) * 4;
