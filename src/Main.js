@@ -90,30 +90,30 @@ function generateNoise() {
           imageData.data[idx + 2] = 180;
           landPixels++;
         } else if (biomeValue === 1) {
-          // Forest
-          imageData.data[idx] = 250;
-          imageData.data[idx + 1] = 0;
-          imageData.data[idx + 2] = 0;
-          landPixels++;
-        } else if (biomeValue === 2) {
-          // Tundra
-          imageData.data[idx] = 50;
-          imageData.data[idx + 1] = 100;
-          imageData.data[idx + 2] = 210;
-          landPixels++;
-        } else if (biomeValue === 3) {
-          // Desert
-          imageData.data[idx] = 237;
-          imageData.data[idx + 1] = 201;
-          imageData.data[idx + 2] = 175;
-          landPixels++;
-        } else {
-          // Land
-          imageData.data[idx] = 34;
-          imageData.data[idx + 1] = 139;
-          imageData.data[idx + 2] = 34;
-          landPixels++;
-        }
+            // Desert
+            imageData.data[idx] = 255;
+            imageData.data[idx + 1] = 0;
+            imageData.data[idx + 2] = 0;
+            landPixels++;
+          } else if (biomeValue === 2) {
+            // Forest
+            imageData.data[idx] = 0;
+            imageData.data[idx + 1] = 255;
+            imageData.data[idx + 2] = 0;
+            landPixels++;
+          } else if (biomeValue === 4) {
+            // Tundra
+            imageData.data[idx] = 0;
+            imageData.data[idx + 1] = 0;
+            imageData.data[idx + 2] = 255;
+            landPixels++;
+          } else {
+            // Land (Default)
+            imageData.data[idx] = 34;
+            imageData.data[idx + 1] = 139;
+            imageData.data[idx + 2] = 34;
+            landPixels++;
+          }
     
         // Sets the alpha channel value
         imageData.data[idx + 3] = 255;
@@ -121,7 +121,7 @@ function generateNoise() {
       }
     }
 
-    // Call the removeMountainsTouchingCoast function before putting the image data onto the canvas
+    // Call the removeMountainsTouchingCoast function before putting the biome data onto the canvas
     removeMountainsTouchingCoast(imageData, canvas.width, canvas.height);
     ctx.putImageData(imageData, 0, 0);
 
@@ -136,8 +136,6 @@ function generateNoise() {
     // GIVE THE ATTEMPTS COUNTER SOME BLOODY SPACE SO I STOP TOUCHING IT AND CRASHING MY BROWSER
 
   } while ((landPercentage < minLandPercentage || landPercentage > maxLandPercentage) && attempts < maxAttempts);
-
-
 
   return { seed1, seed2, seed3, seed4 };
 }
@@ -199,7 +197,6 @@ function floodFill(imageData, x, y, width, height, targetColor, replacementColor
     if (isColorEqual(currentColor, targetColor)) {
       setPixelColor(imageData, x, y, width, height, replacementColor);
 
-      // Keep the alpha value as it is for the land pixels
       imageData.data[(y * width + x) * 4 + 3] = 255;
 
       if (x > 0) stack.push({ x: x - 1, y });
@@ -278,11 +275,9 @@ const toggleTempMapBtn = document.querySelector('.toggleTempMapBtn');
 const heatMapContainer = document.querySelector('#heatMapContainer');
 
 toggleTempMapBtn.addEventListener('click', function() {
-  // If the heat map is currently displayed, hide it
   if (heatMapContainer.style.display !== 'none') {
     heatMapContainer.style.display = 'none';
   } 
-  // If the heat map is currently hidden, show it
   else {
     heatMapContainer.style.display = 'block';
   }
