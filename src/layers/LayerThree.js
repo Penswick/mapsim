@@ -13,7 +13,7 @@ export function generateLayerThree(width, height, seed4, heatMapContainer) {
   for (let y = 0; y < Math.ceil(height/cellSize); y++) {
     for (let x = 0; x < Math.ceil(width/cellSize); x++) {
       // cellValues[y][x] = Math.floor(Math.random() * 11) - 5;
-      cellValues[y][x] = 0; // Change here, all generated values are now 0
+      cellValues[y][x] = 0;
     }
   }
 
