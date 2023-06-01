@@ -10,12 +10,23 @@ export function generateLayerThree(width, height, seed4, heatMapContainer) {
 
   const cellValues = Array.from(Array(Math.ceil(height/cellSize)), () => new Array(Math.ceil(width/cellSize)));
 
+  // Anchor points
+  const N = -5;
+  const S = 5;
+  const E = Math.floor(Math.random() * 7) - 3;  // Random value between -3 and 3
+  const W = Math.floor(Math.random() * 5) - 2;  // Random value between -2 and 2
+
   for (let y = 0; y < Math.ceil(height/cellSize); y++) {
     for (let x = 0; x < Math.ceil(width/cellSize); x++) {
-      // cellValues[y][x] = Math.floor(Math.random() * 11) - 5;
-      cellValues[y][x] = 0;
+      // Check if the current cell is an anchor point
+      if (y === 0 && x === Math.floor(width/(2*cellSize))) cellValues[y][x] = N;
+      else if (y === Math.floor(height/cellSize) - 1 && x === Math.floor(width/(2*cellSize))) cellValues[y][x] = S;
+      else if (x === 0 && y === Math.floor(height/(2*cellSize))) cellValues[y][x] = W;
+      else if (x === Math.floor(width/cellSize) - 1 && y === Math.floor(height/(2*cellSize))) cellValues[y][x] = E;
+      else cellValues[y][x] = 0;
     }
   }
+
 
   const canvas = document.createElement('canvas');
   canvas.width = width;
@@ -41,14 +52,15 @@ export function generateLayerThree(width, height, seed4, heatMapContainer) {
     }
   }
   // draws the anchor points
-  ctx.font = 'bold 25px Arial';
+  ctx.font = 'bold 14px Arial';
   ctx.fillStyle = 'red'
 
-  // Draw the direction letters
-  ctx.fillText('N', width / 2, 50); // N at the top
-  ctx.fillText('S', width / 2, height - 50); // S at the bottom
-  ctx.fillText('W', 50, height / 2); // W at the left
-  ctx.fillText('E', width - 50, height / 2); // E at the right
+// Draw the direction letters
+ctx.fillText('N', Math.floor(width/(2*cellSize)) * cellSize + cellSize / 2, cellSize / 2); // N at the top
+ctx.fillText('S', Math.floor(width/(2*cellSize)) * cellSize + cellSize / 2, height - cellSize / 2); // S at the bottom
+ctx.fillText('W', cellSize / 2, Math.floor(height/(2*cellSize)) * cellSize + cellSize / 2); // W at the left
+ctx.fillText('E', width - cellSize / 2, Math.floor(height/(2*cellSize)) * cellSize + cellSize / 2); // E at the right
+
 
 for (let y = 0; y < Math.ceil(height/cellSize); y++) {
   for (let x = 0; x < Math.ceil(width/cellSize); x++) {
