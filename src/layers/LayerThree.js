@@ -1,12 +1,7 @@
 export function generateLayerThree(width, height, seed4, heatMapContainer) {
   const layerData = new Float32Array(width * height);
 
-  let forestCount = 0;
-  let tundraCount = 0;
-  let desertCount = 0;
-  let defaultCount = 0;
-
-  const cellSize = 25;
+  const cellSize = 5;
 
   const cellValues = Array.from(Array(Math.ceil(height / cellSize)), () =>
     new Array(Math.ceil(width / cellSize)).fill(0)
@@ -15,7 +10,6 @@ export function generateLayerThree(width, height, seed4, heatMapContainer) {
 const cellOrigins = Array.from(Array(Math.ceil(height / cellSize)), () =>
   new Array(Math.ceil(width / cellSize)).fill(null)
 );
-
 
 // Define the anchor points with their coordinates and values
 const anchorPoints = [
@@ -26,7 +20,8 @@ const anchorPoints = [
 ];
 
 
-// Function to calculate Euclidean distance between two points. I hate maths I hate maths I hate maths I hate maths.
+// calculates Euclidean distance between two point
+// I hate this
 function calculateDistance(x1, y1, x2, y2) {
   return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 }
@@ -125,19 +120,45 @@ for (let y = 0; y < Math.ceil(height/cellSize); y++) {
         if (pixelX >= width || pixelY >= height) continue;
 
         // Biome placement logic
-        if (cellValue >= 2 && cellValue <= 5) {
-          layerData[pixelY * width + pixelX] = 1; // Desert
-          desertCount++;
-        } else if (cellValue >= -1 && cellValue <= 1) {
-          layerData[pixelY * width + pixelX] = 2; // Forest
-          forestCount++;
-        } else if (cellValue >= -5 && cellValue <= -2) {
-          layerData[pixelY * width + pixelX] = 4; // Tundra
-          tundraCount++;
+        if (cellValue === 5) {
+          // Extreme Deserts
+          layerData[pixelY * width + pixelX] = 5;
+        } else if (cellValue === 4) {
+          // Desert
+          layerData[pixelY * width + pixelX] = 4;
+        } else if (cellValue === 3) {
+          // Savannahs
+          layerData[pixelY * width + pixelX] = 3;
+        } else if (cellValue === 2) {
+          // Rainforest
+          layerData[pixelY * width + pixelX] = 2;
+        } else if (cellValue === 1) {
+          // blackforest
+          layerData[pixelY * width + pixelX] = 1;
+        } else if (cellValue === 0) {
+          // Grassland
+          layerData[pixelY * width + pixelX] = 0;
+        } else if (cellValue === -1) {
+          // Forest
+          layerData[pixelY * width + pixelX] = -1;
+        } else if (cellValue === -2) {
+          // Taiga
+          layerData[pixelY * width + pixelX] = -2;
+        } else if (cellValue === -3) {
+          // Boreal Forest
+          layerData[pixelY * width + pixelX] = -3;
+        } else if (cellValue === -4) {
+          // Tundra
+          layerData[pixelY * width + pixelX] = -4;
+        } else if (cellValue === -5) {
+          // Ice Sheet
+          layerData[pixelY * width + pixelX] = -5;
         } else {
-          layerData[pixelY * width + pixelX] = 0; // Default
-          defaultCount++;
+          // Default
+          layerData[pixelY * width + pixelX] = 0;
         }
+        
+
       }
     }
   }
@@ -154,9 +175,6 @@ ctx.fillText('E', width - cellSize / 2, Math.floor(height/(2*cellSize)) * cellSi
   heatMapContainer.innerHTML = ''; // Clear the heatMapContainer
   heatMapContainer.appendChild(canvas); // Append the new canvas to the heatMapContainer
 
-  console.log("Forest count:", forestCount);
-  console.log("Tundra count:", tundraCount);
-  console.log("Desert count:", desertCount);
-  console.log("Default count:", defaultCount);
+  
   return layerData;
 }

@@ -89,31 +89,80 @@ function generateNoise() {
           imageData.data[idx + 1] = 180;
           imageData.data[idx + 2] = 180;
           landPixels++;
+        }  else if (biomeValue === 5) {
+          // Extreme Desert
+          imageData.data[idx] = 255;
+          imageData.data[idx + 1] = 215;
+          imageData.data[idx + 2] = 0;
+          landPixels++;
+        } else if (biomeValue === 4) {
+          // Desert
+          imageData.data[idx] = 244;
+          imageData.data[idx + 1] = 164;
+          imageData.data[idx + 2] = 48;
+          landPixels++;
+        } else if (biomeValue === 3) {
+          // Savannah
+          imageData.data[idx] = 244;
+          imageData.data[idx + 1] = 164;
+          imageData.data[idx + 2] = 96;
+          landPixels++;
+        } else if (biomeValue === 2) {
+          // Rainforest
+          imageData.data[idx] = 24;
+          imageData.data[idx + 1] = 43;
+          imageData.data[idx + 2] = 24;
+          landPixels++;
         } else if (biomeValue === 1) {
-            // Desert
-            imageData.data[idx] = 255;
-            imageData.data[idx + 1] = 0;
-            imageData.data[idx + 2] = 0;
-            landPixels++;
-          } else if (biomeValue === 2) {
-            // Forest
-            imageData.data[idx] = 0;
-            imageData.data[idx + 1] = 255;
-            imageData.data[idx + 2] = 0;
-            landPixels++;
-          } else if (biomeValue === 4) {
-            // Tundra
-            imageData.data[idx] = 0;
-            imageData.data[idx + 1] = 0;
-            imageData.data[idx + 2] = 255;
-            landPixels++;
-          } else {
-            // Land (Default)
-            imageData.data[idx] = 34;
-            imageData.data[idx + 1] = 139;
-            imageData.data[idx + 2] = 34;
-            landPixels++;
-          }
+          // blackforest
+          imageData.data[idx] = 8;
+          imageData.data[idx + 1] = 33;
+          imageData.data[idx + 2] = 1;
+          landPixels++;
+        }  else if (biomeValue === 0) {
+          // Grassland
+          imageData.data[idx] = 124;
+          imageData.data[idx + 1] = 185;
+          imageData.data[idx + 2] = 0;
+          landPixels++;
+        } else if (biomeValue === -1) {
+          // Forest
+          imageData.data[idx] = 34;
+          imageData.data[idx + 1] = 139;
+          imageData.data[idx + 2] = 34;
+          landPixels++;
+        } else if (biomeValue === -2) {
+          // Taiga
+          imageData.data[idx] = 99; 
+          imageData.data[idx + 1] = 139; 
+          imageData.data[idx + 2] = 237;
+          landPixels++;
+        } else if (biomeValue === -3) {
+          // Boreal Forest
+          imageData.data[idx] = 85;
+          imageData.data[idx + 1] = 107;
+          imageData.data[idx + 2] = 47;
+          landPixels++;
+        } else if (biomeValue === -4) {
+          // Tundra
+          imageData.data[idx] = 135;
+          imageData.data[idx + 1] = 206;
+          imageData.data[idx + 2] = 235;
+          landPixels++;
+        } else if (biomeValue === -5) {
+          // Ice Sheet
+          imageData.data[idx] = 255;
+          imageData.data[idx + 1] = 250;
+          imageData.data[idx + 2] = 250;
+          landPixels++;
+        } else {
+          // Land (Default)
+          imageData.data[idx] = 34;
+          imageData.data[idx + 1] = 139;
+          imageData.data[idx + 2] = 34;
+          landPixels++;
+        }
+        
     
         // Sets the alpha channel value
         imageData.data[idx + 3] = 255;
@@ -253,6 +302,7 @@ generateBtn.addEventListener("click", () => {
   saveBtn.dataset.seed3 = seeds.seed3;
   saveBtn.dataset.seed4 = seeds.seed4; 
 });
+
 
 saveBtn.addEventListener("click", () => {
   const seed1 = saveBtn.dataset.seed1;
