@@ -36,10 +36,6 @@ function calculateCombinedNoiseValue(noiseValue, clusterValue, numClusters, land
 
   return adjustedNoiseValue;
 }
-
-
-
-
 function smoothMountainData(mountainData, width, height, iterations = 1) {
   for (let iteration = 0; iteration < iterations; iteration++) {
     const newMountainData = new Float32Array(width * height);

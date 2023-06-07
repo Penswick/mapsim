@@ -60,14 +60,11 @@ function generateNoise() {
         const blendedNoiseValue = combinedNoiseValue * gradient;
     
         const idx = (y * canvas.width + x) * 4;
-        const colorThreshold = 0.015;
-        const coastlineThreshold = 0.06;
+        const colorThreshold = 0.005; // deep water threshold
         const mountainThreshold = 0.4;
     
         // Gets the forest noise value from the forest data
         const biomeValue = forestData[y * canvas.width + x];
-
-
         if (blendedNoiseValue < colorThreshold) {
           // Deep water
           imageData.data[idx] = 0;
@@ -78,100 +75,50 @@ function generateNoise() {
           imageData.data[idx] = 0;
           imageData.data[idx + 1] = 100;
           imageData.data[idx + 2] = 255;
-        } else if (blendedNoiseValue < coastlineThreshold) {
-          imageData.data[idx] = 240;
-          imageData.data[idx + 1] = 230;
-          imageData.data[idx + 2] = 50;
-          landPixels++;
         } else if (mountainData[y * canvas.width + x] > mountainThreshold) {
           // Mountain
           imageData.data[idx] = 180;
           imageData.data[idx + 1] = 180;
           imageData.data[idx + 2] = 180;
           landPixels++;
-        }  else if (biomeValue === 5) {
-          // Extreme Desert
-          imageData.data[idx] = 255;
-          imageData.data[idx + 1] = 215;
-          imageData.data[idx + 2] = 0;
-          landPixels++;
-        } else if (biomeValue === 4) {
+        } else if (biomeValue >= 50) {
           // Desert
           imageData.data[idx] = 244;
           imageData.data[idx + 1] = 164;
           imageData.data[idx + 2] = 48;
           landPixels++;
-        } else if (biomeValue === 3) {
-          // Savannah
-          imageData.data[idx] = 244;
-          imageData.data[idx + 1] = 164;
-          imageData.data[idx + 2] = 96;
-          landPixels++;
-        } else if (biomeValue === 2) {
+        } else if (biomeValue >= 20) {
           // Rainforest
           imageData.data[idx] = 24;
           imageData.data[idx + 1] = 43;
           imageData.data[idx + 2] = 24;
           landPixels++;
-        } else if (biomeValue === 1) {
-          // blackforest
-          imageData.data[idx] = 8;
-          imageData.data[idx + 1] = 33;
-          imageData.data[idx + 2] = 1;
-          landPixels++;
-        }  else if (biomeValue === 0) {
+        } else if (biomeValue >= -10) {
           // Grassland
           imageData.data[idx] = 124;
           imageData.data[idx + 1] = 185;
           imageData.data[idx + 2] = 0;
           landPixels++;
-        } else if (biomeValue === -1) {
+        } else if (biomeValue >= -30) {
           // Forest
           imageData.data[idx] = 34;
           imageData.data[idx + 1] = 139;
           imageData.data[idx + 2] = 34;
           landPixels++;
-        } else if (biomeValue === -2) {
-          // Taiga
-          imageData.data[idx] = 99; 
-          imageData.data[idx + 1] = 139; 
-          imageData.data[idx + 2] = 237;
-          landPixels++;
-        } else if (biomeValue === -3) {
+        } else if (biomeValue >= -50) {
           // Boreal Forest
           imageData.data[idx] = 85;
           imageData.data[idx + 1] = 107;
           imageData.data[idx + 2] = 47;
           landPixels++;
-        } else if (biomeValue === -4) {
-          // Tundra
-          imageData.data[idx] = 135;
-          imageData.data[idx + 1] = 206;
-          imageData.data[idx + 2] = 235;
-          landPixels++;
-        } else if (biomeValue === -5) {
-          // Ice Sheet
-          imageData.data[idx] = 255;
-          imageData.data[idx + 1] = 250;
-          imageData.data[idx + 2] = 250;
-          landPixels++;
-        } else {
-          // Land (Default)
-          imageData.data[idx] = 34;
-          imageData.data[idx + 1] = 139;
-          imageData.data[idx + 2] = 34;
-          landPixels++;
         }
-        
-    
         // Sets the alpha channel value
         imageData.data[idx + 3] = 255;
         totalPixels++;
       }
     }
 
-    // Call the removeMountainsTouchingCoast function before putting the biome data onto the canvas
-    removeMountainsTouchingCoast(imageData, canvas.width, canvas.height);
+
     ctx.putImageData(imageData, 0, 0);
 
     landPercentage = (landPixels / totalPixels) * 100;
@@ -189,111 +136,6 @@ function generateNoise() {
   return { seed1, seed2, seed3, seed4 };
 }
 
-function removeMountainsTouchingCoast(imageData, width, height) {
-  const coastlineColor = {
-    r: 240,
-    g: 230,
-    b: 50
-  };
-  const landColor = {
-    r: 0,
-    g: 150,
-    b: 0
-  };
-  const mountainColor = {
-    r: 180,
-    g: 180,
-    b: 180
-  };
-
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const idx = (y * width + x) * 4;
-      const currentPixelColor = {
-        r: imageData.data[idx],
-        g: imageData.data[idx + 1],
-        b: imageData.data[idx + 2]
-      };
-
-      if (isColorEqual(currentPixelColor, mountainColor) && isAdjacentToColor(imageData, x, y, width, height, coastlineColor)) {
-        floodFill(imageData, x, y, width, height, mountainColor, landColor);
-      }
-    }
-  }
-}
-
-function getPixelColor(imageData, x, y) {
-  const idx = (y * imageData.width + x) * 4;
-  return {
-    r: imageData.data[idx],
-    g: imageData.data[idx + 1],
-    b: imageData.data[idx + 2],
-  };
-}
-
-function floodFill(imageData, x, y, width, height, targetColor, replacementColor) {
-  if (isColorEqual(targetColor, replacementColor)) {
-    return;
-  }
-
-  const stack = [];
-  stack.push({ x, y });
-
-  while (stack.length > 0) {
-    const { x, y } = stack.pop();
-    const currentColor = getPixelColor(imageData, x, y);
-
-    if (isColorEqual(currentColor, targetColor)) {
-      setPixelColor(imageData, x, y, width, height, replacementColor);
-
-      imageData.data[(y * width + x) * 4 + 3] = 255;
-
-      if (x > 0) stack.push({ x: x - 1, y });
-      if (x < width - 1) stack.push({ x: x + 1, y });
-      if (y > 0) stack.push({ x, y: y - 1 });
-      if (y < height - 1) stack.push({ x, y: y + 1 });
-    }
-  }
-}
-
-
-
-function setPixelColor(imageData, x, y, width, height, color) {
-  const idx = (y * width + x) * 4;
-  imageData.data[idx] = color.r;
-  imageData.data[idx + 1] = color.g;
-  imageData.data[idx + 2] = color.b;
-}
-
-function isColorEqual(color1, color2) {
-  return color1.r === color2.r && color1.g === color2.g && color1.b === color2.b;
-}
-
-function isAdjacentToColor(imageData, x, y, width, height, targetColor) {
-  for (let dy = -1; dy <= 1; dy++) {
-    for (let dx = -1; dx <= 1; dx++) {
-      if (dx === 0 && dy === 0) continue;
-
-      const newX = x + dx;
-      const newY = y + dy;
-
-      if (newX >= 0 && newX < width && newY >= 0 && newY < height) {
-        const idx = (newY * width + newX) * 4;
-        const adjacentPixelColor = {
-          r: imageData.data[idx],
-          g: imageData.data[idx + 1],
-          b: imageData.data[idx + 2]
-        };
-
-        if (isColorEqual(adjacentPixelColor, targetColor)) {
-          return true;
-        }
-      }
-    }
-  }
-
-  return false;
-}
 
 generateBtn.addEventListener("click", () => {
   const seeds = generateNoise();
